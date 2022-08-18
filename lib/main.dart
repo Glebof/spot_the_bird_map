@@ -17,10 +17,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LocationCubit>(
-          create: (BuildContext context) => LocationCubit()..getLocation(),
+          create: (context) => LocationCubit()..getLocation(),
         ),
         BlocProvider<BirdPostCubit>(
-          create: (BuildContext context) => BirdPostCubit(),
+          create: (context) => BirdPostCubit()..loadPosts(),
         ),
       ],
       child: MaterialApp(
