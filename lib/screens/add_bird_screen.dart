@@ -26,13 +26,23 @@ class _AddBirdScreenState extends State<AddBirdScreen> {
   String? name;
   String? description;
 
-  void _submit(BirdModel birdModel, BuildContext context) {
+  void _submit(BuildContext context) {
     if(!_formKey.currentState!.validate()){
       // Invalid!!
       return;
     }
 
     _formKey.currentState!.save();
+
+    final BirdModel birdModel = BirdModel(
+        image: widget.image,
+        longitude: widget.latLng.longitude,
+        latitude: widget.latLng.latitude,
+        birdDescription: description,
+        birdName: name);
+
+
+
     // Save to cubit
     context.read<BirdPostCubit>().addBirdPost(birdModel);
     Navigator.of(context).pop();
@@ -99,14 +109,8 @@ class _AddBirdScreenState extends State<AddBirdScreen> {
                       InputDecoration(hintText: "Enter a bird decoration"),
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) {
-                    final BirdModel birdModel = BirdModel(
-                        image: widget.image,
-                        longitude: widget.latLng.longitude,
-                        latitude: widget.latLng.latitude,
-                        birdDescription: description,
-                        birdName: name);
 
-                    _submit(birdModel, context);
+                    _submit(context);
                   },
                   onSaved: (value) {
                     description = value!.trim();
@@ -131,14 +135,7 @@ class _AddBirdScreenState extends State<AddBirdScreen> {
           // TODO:- Add bird post to BirdPostCubit
           // Save Bird Post
 
-          final BirdModel birdModel = BirdModel(
-              image: widget.image,
-              longitude: widget.latLng.longitude,
-              latitude: widget.latLng.latitude,
-              birdDescription: description,
-              birdName: name);
-
-          _submit(birdModel, context);
+          _submit(context);
 
           // Later show post on the map
         },
