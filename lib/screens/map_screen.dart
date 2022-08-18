@@ -3,10 +3,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:spot_the_bird/bloc/location_cubit.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'add_bird_screen.dart';
 
 class MapScreen extends StatelessWidget {
 
   final MapController _mapController = MapController();
+
+  Future<void> _pickImageAndCreatePost({required LatLng latLng, required BuildContext context}) async{
+
+    File? image;
+    
+    final picker = ImagePicker();
+    
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 40);
+
+    if(pickedFile != null){
+      image = File(pickedFile.path);
+      // Navigate to new screen
+      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddBirdScreen(latLng: latLng, image: image!)));
+    } else {
+      print("User didn`t pick image");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +40,7 @@ class MapScreen extends StatelessWidget {
           }
           if (currentState is LocationError) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: Duration(seconds: 5),
+                duration: Duration(seconds: 6),
                 backgroundColor: Colors.red.withOpacity(0.6),
                 content: Text("Error, uneble to fetch location...")
             ));
@@ -29,6 +49,18 @@ class MapScreen extends StatelessWidget {
         child: FlutterMap(
           mapController: _mapController,
           options: MapOptions(
+            onLongPress: (TapPosition, latLng) {
+
+              //TODO:- Go To Create Bird Post
+              //TODO:- Pick Image and go to AddBirdScreen
+
+              _pickImageAndCreatePost(latLng: latLng, context: context);
+
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(builder: (context) => AddBirdScreen(latLng: latLng,)),
+              // );
+
+            },
             center: LatLng(0, 0),
             zoom: 2.3,
             maxZoom: 17,
