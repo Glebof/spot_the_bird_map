@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:spot_the_bird/bloc/bird_post_cubit.dart';
 import 'package:spot_the_bird/bloc/location_cubit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../models/bird_post_model.dart';
 import 'add_bird_screen.dart';
 
 class MapScreen extends StatelessWidget {
@@ -28,6 +30,26 @@ class MapScreen extends StatelessWidget {
     }
   }
 
+  List<Marker> _buildMarkers(BuildContext context, List<BirdModel> birdPosts){
+    List<Marker> markers = [];
+
+    birdPosts.forEach((post) {
+      markers.add(
+        Marker(
+          width: 55,
+          height: 55,
+          point: LatLng(post.latitude, post.longitude),
+          builder: (ctx) => Container(
+            //TODO:- Add pin image
+            color: Colors.blueAccent,
+          )
+        )
+      );
+    });
+
+    return markers;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,33 +68,34 @@ class MapScreen extends StatelessWidget {
             ));
           }
         },
-        child: FlutterMap(
-          mapController: _mapController,
-          options: MapOptions(
-            onLongPress: (TapPosition, latLng) {
+        child: BlocBuilder<BirdPostCubit, BirdPostState>(
+          buildWhen: (prevState, currentState)=>(prevState.status != currentState.status),
+          builder: (context, birdPostState){
+            return FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                onLongPress: (TapPosition, latLng) {
 
-              //TODO:- Go To Create Bird Post
-              //TODO:- Pick Image and go to AddBirdScreen
+                  _pickImageAndCreatePost(latLng: latLng, context: context);
 
-              _pickImageAndCreatePost(latLng: latLng, context: context);
-
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(builder: (context) => AddBirdScreen(latLng: latLng,)),
-              // );
-
-            },
-            center: LatLng(0, 0),
-            zoom: 2.3,
-            maxZoom: 17,
-            minZoom: 3.5,
-          ),
-          layers: [
-            TileLayerOptions(
-              urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-              subdomains: ['a', 'b', 'c'],
-              retinaMode: true,
-            )
-          ],
+                },
+                center: LatLng(0, 0),
+                zoom: 2.3,
+                maxZoom: 17,
+                minZoom: 3.5,
+              ),
+              layers: [
+                TileLayerOptions(
+                  urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  subdomains: ['a', 'b', 'c'],
+                  retinaMode: true,
+                ),
+                MarkerLayerOptions(
+                  markers: _buildMarkers(context, birdPostState.birdPosts),
+                )
+              ],
+            );
+          },
         ),
       ),
 
