@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "MyDataBase.db";
+  static final _databaseName = "MyDataBase2.db";
 
   static final _databaseVersion = 1;
 
@@ -19,7 +19,7 @@ class DatabaseHelper {
 
   static final columnUrl = "url";
 
-  static final longtitude = "longtitude";
+  static final longitude = "longitude";
   static final latitude = "latitude";
 
   // Create Singleton
@@ -30,7 +30,7 @@ class DatabaseHelper {
   static Database? _database;
 
   Future<Database?> get database async {
-    if(database != null) return _database;
+    if(_database != null) return _database;
 
     _database = await _initDatabase();
     return _database;
@@ -56,7 +56,7 @@ class DatabaseHelper {
       $columnDescription TEXT NOT NULL,
       $columnUrl TEXT NOT NULL,
       $latitude REAL NOT NULL,
-      $longtitude REAL NOT NULL)
+      $longitude REAL NOT NULL)
       """
     );
   }
